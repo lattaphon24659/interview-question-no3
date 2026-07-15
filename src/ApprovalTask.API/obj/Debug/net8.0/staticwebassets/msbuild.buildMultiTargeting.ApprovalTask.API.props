@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\ApprovalTask.API.props" />
-</Project>
