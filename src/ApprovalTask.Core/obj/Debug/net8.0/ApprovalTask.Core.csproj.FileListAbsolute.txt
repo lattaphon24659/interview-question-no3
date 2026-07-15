@@ -1,0 +1,12 @@
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\bin\Debug\net8.0\ApprovalTask.Core.deps.json
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\bin\Debug\net8.0\ApprovalTask.Core.dll
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\bin\Debug\net8.0\ApprovalTask.Core.pdb
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.GeneratedMSBuildEditorConfig.editorconfig
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.AssemblyInfoInputs.cache
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.AssemblyInfo.cs
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.csproj.CoreCompileInputs.cache
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.sourcelink.json
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.dll
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\refint\ApprovalTask.Core.dll
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ApprovalTask.Core.pdb
+e:\work\testno03\interview-question-no3\src\ApprovalTask.Core\obj\Debug\net8.0\ref\ApprovalTask.Core.dll
