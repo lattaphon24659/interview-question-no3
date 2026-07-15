@@ -27,7 +27,6 @@ namespace ApprovalTask.API.Controllers
             [FromBody] ApprovalCommand request,
             [FromServices] ApprovalCommandHandler handler)
         {
-
             try
             {
                 await handler.HandleAsync(request);

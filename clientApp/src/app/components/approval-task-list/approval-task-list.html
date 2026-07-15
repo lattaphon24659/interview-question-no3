@@ -1,0 +1,191 @@
+<div class="approval-card">
+    <div class="card-header">
+        <div class="title-section">
+            <h2>รายการตรวจสอบเอกสาร (IT 03-1)</h2>
+            <p>เลือกเอกสารที่อยู่ในสถานะ "รออนุมัติ" เพื่อทำการพิจารณา</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-approve-top" [disabled]="!hasSelection" (click)="openDecisionModal(true)">
+                อนุมัติ
+            </button>
+            <button class="btn btn-reject-top" [disabled]="!hasSelection" (click)="openDecisionModal(false)">
+                ไม่อนุมัติ
+            </button>
+        </div>
+    </div>
+
+    <!-- แถบเครื่องมือกองข้อมูล (ค้นหา และ เลือกหลายสถานะพร้อมกันผ่านปุ่มแคปซูล) -->
+    <div class="filters-bar">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event); onSearchChange()"
+                placeholder="ค้นหาตามชื่อเรื่อง หรือเหตุผล..." />
+        </div>
+        <div class="filter-status-pills">
+            <span class="filter-label">สถานะเอกสาร:</span>
+            <button class="pill-btn" [class.active]="isStatusSelected('all')" (click)="toggleStatusFilter('all')">
+                ทั้งหมด
+            </button>
+            <button class="pill-btn pill-pending" [class.active]="isStatusSelected('pending')"
+                (click)="toggleStatusFilter('pending')">
+                รออนุมัติ
+            </button>
+            <button class="pill-btn pill-approved" [class.active]="isStatusSelected('approved')"
+                (click)="toggleStatusFilter('approved')">
+                อนุมัติแล้ว
+            </button>
+            <button class="pill-btn pill-rejected" [class.active]="isStatusSelected('rejected')"
+                (click)="toggleStatusFilter('rejected')">
+                ไม่อนุมัติ
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px; text-align: center;">
+                        <input type="checkbox" [checked]="isAllPendingSelected" (change)="toggleSelectAll($event)" />
+                    </th>
+                    <th style="width: 80px; text-align: center;">ลำดับ</th>
+                    <th class="sortable" (click)="changeSort('title')">
+                        รายการเอกสาร
+                        <span class="sort-icon" *ngIf="sortColumn() === 'title'">
+                            {{ sortAscending() ? '▲' : '▼' }}
+                        </span>
+                    </th>
+                    <th class="sortable" (click)="changeSort('reason')">
+                        เหตุผลการพิจารณา
+                        <span class="sort-icon" *ngIf="sortColumn() === 'reason'">
+                            {{ sortAscending() ? '▲' : '▼' }}
+                        </span>
+                    </th>
+                    <th style="width: 170px; text-align: center;" class="sortable" (click)="changeSort('status')">
+                        สถานะเอกสาร
+                        <span class="sort-icon" *ngIf="sortColumn() === 'status'">
+                            {{ sortAscending() ? '▲' : '▼' }}
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of pagedRequests(); let idx = index"
+                    [class.row-approved]="item.status === ApprovalStatus.Approved"
+                    [class.row-rejected]="item.status === ApprovalStatus.Rejected">
+
+                    <td style="text-align: center;">
+                        <input type="checkbox" [checked]="selectedIds().includes(item.id)"
+                            [disabled]="item.status !== ApprovalStatus.Pending" (change)="toggleSelection(item.id)" />
+                    </td>
+
+                    <td style="text-align: center; color: #94a3b8;">
+                        {{ (currentPage() - 1) * pageSize() + idx + 1 }}
+                    </td>
+
+                    <td>
+                        <div class="doc-title">{{ item.title }}</div>
+                        <div class="doc-meta">วันที่สร้าง: {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                        <div class="doc-meta-approved"
+                            *ngIf="item.status === ApprovalStatus.Approved && item.updatedAt">
+                            วันที่อนุมัติ: {{ item.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+                        </div>
+                        <div class="doc-meta-rejected"
+                            *ngIf="item.status === ApprovalStatus.Rejected && item.updatedAt">
+                            วันที่ไม่อนุมัติ: {{ item.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="reason-text" *ngIf="item.reason">{{ item.reason }}</span>
+                        <span class="reason-placeholder" *ngIf="!item.reason">-</span>
+                    </td>
+
+                    <td style="text-align: center;">
+                        <span class="status-badge" [ngClass]="{
+                            'badge-pending': item.status === ApprovalStatus.Pending,
+                            'badge-approved': item.status === ApprovalStatus.Approved,
+                            'badge-rejected': item.status === ApprovalStatus.Rejected
+                        }">
+                            <span *ngIf="item.status === ApprovalStatus.Pending">รออนุมัติ</span>
+                            <span *ngIf="item.status === ApprovalStatus.Approved">อนุมัติ</span>
+                            <span *ngIf="item.status === ApprovalStatus.Rejected">ไม่อนุมัติ</span>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr *ngIf="pagedRequests().length === 0">
+                    <td colspan="5" class="empty-row">ไม่พบข้อมูลคำขออนุมัติเอกสารในระบบ</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ส่วนล่างควบคุมเลขหน้า (Pagination) -->
+    <div class="pagination-footer" *ngIf="filteredRequests().length > 0">
+        <div class="pagination-info">
+            แสดง
+            <select class="select-page-size" [ngModel]="pageSize()" (ngModelChange)="onPageSizeChange($event)">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="20">20</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+            </select>
+            รายการต่อหน้า (แสดง {{ (currentPage() - 1) * pageSize() + 1 }} ถึง
+            {{ mathMin(currentPage() * pageSize(), filteredRequests().length) }} จากทั้งหมด
+            {{ filteredRequests().length }} รายการ)
+        </div>
+        <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="setPage(1)">
+                &laquo;
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="setPage(currentPage() - 1)">
+                &lsaquo;
+            </button>
+
+            <span class="page-indicator">หน้า {{ currentPage() }} / {{ totalPages() }}</span>
+
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="setPage(currentPage() + 1)">
+                &rsaquo;
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="setPage(totalPages())">
+                &raquo;
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- หน้าต่างยืนยัน (Modal) -->
+<div class="modal-overlay" *ngIf="isModalOpen()">
+    <div class="modal-box" [class.border-approve]="isApproveMode()" [class.border-reject]="!isApproveMode()">
+        <div class="modal-header">
+            <h3>{{ isApproveMode() ? 'ยืนยันการอนุมัติ (IT 03-2)' : 'ยืนยันการไม่อนุมัติ (IT 03-3)' }}</h3>
+        </div>
+
+        <div class="modal-body">
+            <!-- แสดงจำนวนรายการที่กำลังดำเนินการ -->
+            <div class="modal-summary-box" [class.summary-approve]="isApproveMode()" [class.summary-reject]="!isApproveMode()">
+                <span class="summary-icon">{{ isApproveMode() ? '✅' : '❌' }}</span>
+                <span>คุณกำลังทำรายการ <strong>{{ isApproveMode() ? 'อนุมัติ' : 'ไม่อนุมัติ' }}</strong> เอกสารจำนวน <strong>{{ selectedIds().length }}</strong> รายการ</span>
+            </div>
+
+            <div class="form-group">
+                <label>ระบุเหตุผลการดำเนินการ *</label>
+                <textarea [(ngModel)]="commentReason" placeholder="กรอกเหตุผลอย่างละเอียดสำหรับการพิจารณาในครั้งนี้..."
+                    rows="5" required>
+                </textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-close" (click)="closeDecisionModal()">ยกเลิก</button>
+            <button [ngClass]="isApproveMode() ? 'btn-approve-submit' : 'btn-reject-submit'"
+                class="btn btn-submit-decision" [disabled]="!commentReason.trim() || loading()"
+                (click)="submitDecision()">
+                {{ isApproveMode() ? 'อนุมัติ' : 'ไม่อนุมัติ' }}
+            </button>
+        </div>
+    </div>
+</div>
