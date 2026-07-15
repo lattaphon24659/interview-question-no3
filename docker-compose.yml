@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. SQL Server Database service
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: approval_task_db
@@ -12,6 +13,34 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+    restart: always
+
+  # 2. Web API Backend service
+  backend:
+    build:
+      context: ./webApi
+      dockerfile: Dockerfile
+    container_name: approval_task_backend
+    ports:
+      - "9002:9002"
+    environment:
+      # Use the 'sqlserver' service name instead of localhost inside the Docker Network
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=taskdb;User Id=sa;Password=myApp@Pass123;TrustServerCertificate=True;MultipleActiveResultSets=true
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - sqlserver
+    restart: always
+
+  # 3. Angular Client Frontend service
+  frontend:
+    build:
+      context: ./clientApp
+      dockerfile: Dockerfile
+    container_name: approval_task_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
     restart: always
 
 volumes:

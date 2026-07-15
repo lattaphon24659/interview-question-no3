@@ -2,121 +2,109 @@
 
 ```text
 ├── README.md                           # คู่มือการติดตั้งและอธิบายการทำงานของระบบ
-├── docker-compose.yml                  # คอนฟิกูเรชันสำหรับรัน MS SQL Server 2022 คอนเทนเนอร์
+├── HOW_TO_CREATE.md                    # คู่มือขั้นตอนการเขียนโค้ดและพัฒนาฟีเจอร์อย่างละเอียด
+├── docker-compose.yml                  # คอนฟิกสำหรับรัน MS SQL Server 2022 ใน Docker
 │
 ├── clientApp/                          # [หน้าบ้าน - Angular Application]
 │   ├── src/
-│   │   ├── app/                        # โฟลเดอร์หลักสำหรับส่วนประกอบของแอป
-│   │   │   ├── app.ts                  # Root Component Logic (ตัวควบคุมการทำงาน)
-│   │   │   ├── app.html                # Root Component Template (หน้าตาของเว็บ)
-│   │   │   ├── app.css                 # สไตล์ชีตของ Root Component
-│   │   │   ├── app.config.ts           # การตั้งค่าแอปพลิเคชัน (เช่น การเปิดใช้งาน HttpClient, Router)
-│   │   │   ├── app.routes.ts           # หน้าเส้นทางของแอปพลิเคชัน (Routing)
-│   │   │   └── app.spec.ts             # ไฟล์ทดสอบย่อยสำหรับ Component
-│   │   ├── public/                     # ที่เก็บไฟล์ Static Assets (เช่น favicon, รูปภาพ)
-│   │   ├── index.html                  # ไฟล์ HTML หลักที่เป็นจุดเริ่มต้นการแสดงผล
-│   │   ├── main.ts                     # จุดเริ่มต้นของการรันแอปพลิเคชัน Angular
-│   │   └── styles.css                  # ไฟล์ CSS หลักสำหรับตกแต่งแอปพลิเคชันทั่วทั้งระบบ (Global Styles)
-│   ├── angular.json                    # ไฟล์ตั้งค่าสำหรับ Angular CLI (เช่น สไตล์, สคริปต์, การ Build)
-│   ├── package.json                    # รายชื่อไลบรารี Dependencies และสคริปต์สั่งรันระบบ
-│   └── tsconfig.json                   # การกำหนดค่าสำหรับคอมไพเลอร์ TypeScript
+│   │   ├── app/
+│   │   │   ├── components/
+│   │   │   │   └── approval-task-list/ # โฟลเดอร์เก็บโค้ด HTML, CSS, TS ของตารางอนุมัติ
+│   │   │   ├── models/                 # โมเดลประเภทข้อมูล (Data models & interfaces)
+│   │   │   ├── services/               # คลาสดึงข้อมูลผ่าน HTTP (ApprovalService)
+│   │   │   ├── app.ts                  # Root Component Logic
+│   │   │   ├── app.html                # Root Component Template
+│   │   │   ├── app.css                 # สไตล์ชีตหลักของ Root Component
+│   │   │   ├── app.routes.ts           # เส้นทาง Routing ของแอปพลิเคชัน
+│   │   │   └── app.config.ts           # การตั้งค่าแอปพลิเคชัน (HttpClient, Routing)
+│   │   ├── public/
+│   │   ├── index.html                  # HTML หลักของ Angular
+│   │   ├── main.ts                     # จุดเริ่มรัน Angular
+│   │   └── styles.css                  # CSS ตกแต่งหลักและดีไซน์ธีมระบบ (Global Styles)
+│   ├── angular.json                    # ไฟล์ตั้งค่า Angular CLI (ขยาย Style Budget เพื่อรองรับ UI)
+│   ├── package.json                    # Dependencies ของแอป
+│   └── tsconfig.json                   # การตั้งค่าคอมไพเลอร์ TypeScript
 │
 └── webApi/                             # [หลังบ้าน - .NET 8 Web API Solution]
-    ├── ApprovalTask.sln                # ไฟล์ Solution สำหรับมัดรวมทุกโปรเจกต์ของระบบเข้าด้วยกัน
+    ├── ApprovalTask.sln                # ไฟล์ Solution สำหรับมัดรวมทุกโปรเจกต์
     │
-    ├── ApprovalTask.API/               # [Presentation Layer] ทำหน้าที่คอยรับส่งข้อมูลทาง HTTP
-    │   ├── Controllers/                # โฟลเดอร์เก็บไฟล์ Controller เพื่อรับคำร้องเรียนจากภายนอก (API Endpoints)
-    │   ├── Properties/
-    │   │   └── launchSettings.json     # คอนฟิกการเปิดพอร์ตและการรันโปรเจกต์ยามพัฒนา (Development Settings)
-    │   ├── appsettings.json            # ไฟล์ตั้งค่าคอนฟิก (Connection Strings, Logging)
-    │   ├── appsettings.Development.json
-    │   ├── Program.cs                  # จุดเริ่มต้นของการรัน API, ตั้งค่า Services (DI) และ Middlewares
-    │   └── ApprovalTask.API.csproj
+    ├── ApprovalTask.API/               # [Presentation Layer] จัดการส่วน Http Controller & Routing
+    │   ├── Controllers/                # Controllers สำหรับคอยรับคำขอ API
+    │   ├── Program.cs                  # จุดเริ่มต้น API, ลงทะเบียน DI และวางสแต็ค Middleware
+    │   └── appsettings.json            # ไฟล์ตั้งค่าระบบ (SQL Connection String)
     │
-    ├── ApprovalTask.Core/              # [Domain Layer] แกนกลางตรรกะทางธุรกิจ (ห้ามนำเข้าไลบรารีภายนอก)
-    │   ├── Commands/                   # คลาสเก็บคำสั่งและตรรกะการทำงาน (ApprovalCommand, ApprovalCommandHandler)
-    │   ├── Entities/                   # คลาสตัวแทนข้อมูลในระบบที่เกี่ยวข้องกับธุรกิจ (Domain Entities)
-    │   ├── Enums/                      # ตัวแปรระบุประเภทสถานะการทำงาน (เช่น ApprovalStatus)
-    │   ├── Interfaces/                 # อินเตอร์เฟซข้อตกลงในการเข้าถึงฐานข้อมูลและการทำงานอื่น ๆ (Repository Abstractions)
-    │   └── ApprovalTask.Core.csproj
+    ├── ApprovalTask.Core/              # [Domain Layer] เก็บแกนหลัก business logic & entity
+    │   ├── Commands/                   # Command & Handlers (ApprovalCommand, Handler)
+    │   ├── Entities/                   # Model ตัวแทนข้อมูลใน DB (ApprovalRequest)
+    │   └── Enums/                      # Enums สถานะคำขอ (ApprovalStatus)
     │
-    ├── ApprovalTask.Infrastructure/    # [Infrastructure Layer] ทำหน้าที่เชื่อมประสานฐานข้อมูลและบริการภายนอก
-    │   ├── Data/
-    │   │   └── AppDbContext.cs         # ตัวจัดการการเชื่อมต่อตารางของ EF Core
-    │   ├── Repositories/               # ไฟล์อิมพลีเมนต์คำสั่งเข้าถึงฐานข้อมูล (Implementation of Repositories)
-    │   └── ApprovalTask.Infrastructure.csproj
-    │
-    └── ApprovalTask.Tests/             # [Test Layer] รวบรวมเทสเคสเพื่อตรวจสอบความถูกต้องของระบบ
-        ├── SampleTests.cs              # คลาสทดสอบการรันชุดเทสเคสเริ่มต้น (xUnit Tests)
-        └── ApprovalTask.Tests.csproj
+    └── ApprovalTask.Infrastructure/    # [Infrastructure Layer] การเข้าถึงข้อมูลจริง
+        ├── Data/
+        │   └── AppDbContext.cs         # EF Core Database Context
+        └── Repositories/               # คลาสเข้าถึงตารางฐานข้อมูลจริง
 ```
 
 ---
 
 ## 🛠️ สิ่งที่จำเป็นต้องมีก่อนเริ่มใช้งาน (Prerequisites)
 
-ตรวจสอบการติดตั้งเครื่องมือต่าง ๆ บนเครื่องคอมพิวเตอร์ของคุณดังนี้:
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [Node.js (v18+)](https://nodejs.org/) & [npm](https://www.npmjs.com/)
-- [Docker & Docker Compose](https://www.docker.com/)
+* [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* [Node.js (v18+)](https://nodejs.org/) & [npm](https://www.npmjs.com/)
+* [Docker Desktop](https://www.docker.com/) สำหรับรัน MS SQL Server
 
 ---
 
-## 🚀 วิธีรันระบบ (How to Run)
+## 🚀 วิธีเปิดรันระบบ (How to Run)
 
-ทำตามขั้นตอนด้านล่างนี้เพื่อเปิดใช้งานระบบทั้งหมด:
+โปรเจกต์นี้รองรับการรัน 2 รูปแบบ คุณสามารถเลือกวิธีที่สะดวกที่สุดได้เลยครับ:
 
-### 1. รันฐานข้อมูล (SQL Server)
-เปิด Terminal ที่โฟลเดอร์หลักนอกสุดของโปรเจกต์ แล้วใช้คำสั่งนี้เพื่อเปิดคอนเทนเนอร์ SQL Server:
+### วิธีที่ 1: รันด้วย Docker Compose (แนะนำ 🌟)
+วิธีที่ง่ายและรวดเร็วที่สุด ระบบจะเตรียมฐานข้อมูล, สร้างตาราง, เติมข้อมูลจำลอง (Make Data) และรันทั้ง Frontend / Backend ให้อัตโนมัติในคำสั่งเดียว
+
+1. เปิด Terminal ที่โฟลเดอร์หลักของโปรเจกต์
+2. รันคำสั่งนี้:
+   ```bash
+   docker compose up -d --build
+   ```
+3. เข้าใช้งานได้ทันที:
+   * 🌐 **หน้าเว็บหลัก (Frontend):** [http://localhost](http://localhost)
+   * ⚙️ **API Backend (Swagger):** [http://localhost:9002/swagger](http://localhost:9002/swagger)
+
+*(ดูรายละเอียดเพิ่มเติมเกี่ยวกับการทำงานของ Docker ได้ที่ไฟล์ [how_to_run_with_docker.md](how_to_run_with_docker.md))*
+
+---
+
+### วิธีที่ 2: รันแบบนักพัฒนา (Local Development)
+สำหรับกรณีที่คุณต้องการแก้ไขโค้ดและรันแบบปกติ
+
+#### 1. เปิดเฉพาะ Database (MS SQL Server)
 ```bash
-docker compose up -d
+docker compose up -d sqlserver
 ```
-*ระบบจะเปิดฐานข้อมูลด้วยพอร์ต `1433` (รหัสผ่านของบัญชี `sa` คือ `myApp@Pass123` ตามที่ระบุไว้ใน `docker-compose.yml`)*
+*(รหัสผ่านบัญชี `sa` คือ `myApp@Pass123`)*
 
----
-
-### 2. รันระบบหลังบ้าน Backend API (`webApi/`)
-
-#### การทำ Migrations และสั่งอัปเดตตารางใน SQL Server
+#### 2. เปิดระบบหลังบ้าน (Backend API)
 ```bash
-# 1. ย้ายเข้าโฟลเดอร์หลังบ้าน
 cd webApi
-
-# 2. สั่งอัปเดตและสร้างตารางฐานข้อมูลจริง (หากสร้างตารางใหม่)
-dotnet ef database update --project ApprovalTask.Infrastructure/ --startup-project ApprovalTask.API/
-```
-
-#### สั่งรัน Backend Web API
-```bash
 dotnet run --project ApprovalTask.API/
 ```
-ระบบจะเปิดให้บริการผ่านพอร์ต:
-- **HTTP**: [http://localhost:9002](http://localhost:9002)
-- **HTTPS**: [https://localhost:9003](https://localhost:9003)
-- **Swagger UI (สำหรับทดสอบ Endpoint)**: [http://localhost:9002/swagger](http://localhost:9002/swagger)
+*(หมายเหตุ: ระบบจะทำการสร้างฐานข้อมูลและเพิ่มข้อมูลจำลองให้โดยอัตโนมัติเมื่อเริ่มรันโปรแกรมครั้งแรก)*
+* ทดสอบ API (Swagger): [http://localhost:9002/swagger](http://localhost:9002/swagger)
 
----
-
-### 3. รันระบบหน้าบ้าน Frontend Client (`clientApp/`)
-เปิด Terminal เพิ่มอีก 1 แท็บเพื่อรันโปรแกรมหน้าบ้าน:
-
+#### 3. เปิดระบบหน้าบ้าน (Frontend Angular)
+เปิด Terminal แท็บใหม่แล้วรันคำสั่ง:
 ```bash
-# ย้ายเข้าโฟลเดอร์หน้าบ้าน
 cd clientApp
-
-# ติดตั้งแพ็กเกจย่อยที่จำเป็น (หากดึงโค้ดลงเครื่องใหม่)
 npm install
-
-# รันระบบเซิร์ฟเวอร์จำลอง
 npm start
 ```
-แอปพลิเคชันของฝั่ง Angular จะเปิดใช้งานที่หน้าเว็บ [http://localhost:4200](http://localhost:4200)
+* เข้าใช้งานหน้าเว็บสำหรับพัฒนาที่: **[http://localhost:4200](http://localhost:4200)**
 
 ---
 
-## 🧪 การรันชุดทดสอบ (Running Tests)
+## 🧪 การตรวจสอบด้วย Unit Tests
 
-คำสั่งสำหรับสั่งรัน Unit Tests ในระบบหลังบ้านทั้งหมด:
+คำสั่งสำหรับตรวจสอบตรรกะระบบในชุด xUnit Tests ของฝั่ง Backend:
 ```bash
 cd webApi
 dotnet test ApprovalTask.sln
